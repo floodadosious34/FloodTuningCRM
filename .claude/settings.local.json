@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --no-src-dir --import-alias \"@/*\" --yes)",
+      "Bash(npx create-next-app@16.2.4 . --typescript --tailwind --eslint --app --no-src-dir --import-alias \"@/*\" --yes --name \"flood-tuning-crm\")",
+      "Bash(npm install *)"
+    ]
+  }
+}
