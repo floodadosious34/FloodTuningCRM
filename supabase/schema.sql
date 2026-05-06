@@ -40,6 +40,16 @@ create table if not exists service_records (
   updated_at timestamptz default now() not null
 );
 
+-- Scheduled appointments table
+create table if not exists appointments (
+  id uuid primary key default gen_random_uuid(),
+  piano_id uuid references pianos(id) on delete cascade not null,
+  scheduled_date date not null,
+  service_type text not null default 'Tuning',
+  notes text,
+  created_at timestamptz default now() not null
+);
+
 -- Reminder tracking table
 create table if not exists reminders (
   id uuid primary key default gen_random_uuid(),
@@ -53,6 +63,7 @@ alter table clients enable row level security;
 alter table pianos enable row level security;
 alter table service_records enable row level security;
 alter table reminders enable row level security;
+alter table appointments enable row level security;
 
 -- RLS Policies: only the owning user can access their data
 create policy "clients: user owns" on clients
@@ -80,6 +91,24 @@ create policy "service_records: user owns via piano" on service_records
       select 1 from pianos
       join clients on clients.id = pianos.client_id
       where pianos.id = service_records.piano_id
+        and clients.user_id = auth.uid()
+    )
+  );
+
+create policy "appointments: user owns via piano" on appointments
+  for all using (
+    exists (
+      select 1 from pianos
+      join clients on clients.id = pianos.client_id
+      where pianos.id = appointments.piano_id
+        and clients.user_id = auth.uid()
+    )
+  )
+  with check (
+    exists (
+      select 1 from pianos
+      join clients on clients.id = pianos.client_id
+      where pianos.id = appointments.piano_id
         and clients.user_id = auth.uid()
     )
   );
