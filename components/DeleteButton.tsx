@@ -29,16 +29,16 @@ export function DeleteButton({ action, label = "Delete" }: DeleteButtonProps) {
       <div className="flex gap-2">
         <button
           onClick={() => setConfirming(false)}
-          className="text-sm text-stone-500 border border-stone-200 rounded-xl px-3 py-2 bg-white"
+          className="text-xs font-bold uppercase tracking-[0.1em] text-zinc-400 border border-zinc-700 px-3 py-2"
         >
           Cancel
         </button>
         <button
           onClick={handleDelete}
           disabled={pending}
-          className="text-sm text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 rounded-xl px-3 py-2"
+          className="text-xs font-bold uppercase tracking-[0.1em] text-white bg-red-600 hover:bg-red-700 disabled:opacity-40 px-3 py-2 transition-colors"
         >
-          {pending ? "Deleting…" : "Confirm"}
+          {pending ? "…" : "Confirm"}
         </button>
       </div>
     );
@@ -47,7 +47,7 @@ export function DeleteButton({ action, label = "Delete" }: DeleteButtonProps) {
   return (
     <button
       onClick={() => setConfirming(true)}
-      className="text-sm text-red-600 border border-red-200 rounded-xl px-3 py-2 bg-white"
+      className="text-xs font-bold uppercase tracking-[0.1em] text-red-500 border border-zinc-800 px-3 py-2 hover:border-red-900 transition-colors"
     >
       {label}
     </button>

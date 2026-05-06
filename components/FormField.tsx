@@ -19,14 +19,14 @@ export function FormField({
   rows,
   step,
 }: FormFieldProps) {
-  const base =
-    "w-full border border-stone-300 rounded-xl px-4 py-3 text-stone-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white placeholder-stone-400";
+  const inputClass =
+    "w-full bg-zinc-950 border-0 px-4 pt-1 pb-3 text-zinc-100 outline-none text-sm placeholder-zinc-700 focus:ring-0";
 
   return (
-    <div>
-      <label htmlFor={name} className="block text-sm font-medium text-stone-700 mb-1">
+    <div className="border border-zinc-800">
+      <label htmlFor={name} className="block text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500 px-4 pt-3">
         {label}
-        {required && <span className="text-red-500 ml-0.5">*</span>}
+        {required && <span className="text-red-600 ml-1">*</span>}
       </label>
       {rows ? (
         <textarea
@@ -36,7 +36,7 @@ export function FormField({
           defaultValue={defaultValue ?? ""}
           required={required}
           placeholder={placeholder}
-          className={base}
+          className={inputClass}
         />
       ) : (
         <input
@@ -47,7 +47,7 @@ export function FormField({
           required={required}
           placeholder={placeholder}
           step={step}
-          className={base}
+          className={inputClass}
         />
       )}
     </div>

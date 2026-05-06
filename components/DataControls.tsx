@@ -20,56 +20,40 @@ export function DataControls() {
     try {
       const formData = new FormData();
       formData.append("file", file);
-
-      const res = await fetch("/api/import", {
-        method: "POST",
-        body: formData,
-      });
-
+      const res = await fetch("/api/import", { method: "POST", body: formData });
       if (res.ok) {
         alert("Import successful!");
         router.refresh();
       } else {
-        const text = await res.text();
-        alert(`Import failed: ${text}`);
+        alert(`Import failed: ${await res.text()}`);
       }
     } catch (err) {
       console.error(err);
       alert("An error occurred during import.");
     } finally {
       setIsUploading(false);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
   return (
-    <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+    <div className="flex items-center gap-2">
       <button
         type="button"
         onClick={handleExport}
-        className="px-3 py-1.5 text-sm font-medium bg-stone-100 border border-stone-200 text-stone-700 hover:bg-stone-200 rounded-lg transition-colors"
+        className="text-xs font-bold uppercase tracking-[0.1em] text-zinc-500 hover:text-zinc-300 border border-zinc-800 px-3 py-2 transition-colors"
       >
-        Export CSV
+        Export
       </button>
-
       <button
         type="button"
         onClick={() => fileInputRef.current?.click()}
         disabled={isUploading}
-        className="px-3 py-1.5 text-sm font-medium bg-amber-600 border border-amber-600 text-white hover:bg-amber-700 rounded-lg transition-colors disabled:opacity-50"
+        className="text-xs font-bold uppercase tracking-[0.1em] text-white bg-red-600 hover:bg-red-700 disabled:opacity-40 px-3 py-2 transition-colors"
       >
-        {isUploading ? "Uploading..." : "Import CSV"}
+        {isUploading ? "Importing…" : "Import"}
       </button>
-
-      <input
-        type="file"
-        accept=".csv"
-        className="hidden"
-        ref={fileInputRef}
-        onChange={handleFileChange}
-      />
+      <input type="file" accept=".csv" className="hidden" ref={fileInputRef} onChange={handleFileChange} />
     </div>
   );
 }

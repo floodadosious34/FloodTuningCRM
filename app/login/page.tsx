@@ -16,9 +16,7 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-
     if (error) {
       setError(error.message);
       setLoading(false);
@@ -29,59 +27,73 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-stone-50 px-4">
-      <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
-          <div className="text-4xl mb-2">🎹</div>
-          <h1 className="text-2xl font-bold text-stone-900">Piano Tuning CRM</h1>
-          <p className="text-stone-500 text-sm mt-1">Sign in to manage your clients</p>
-        </div>
+    <div className="min-h-screen bg-zinc-950 flex">
+      {/* Bauhaus red left rail */}
+      <div className="hidden sm:block w-1.5 bg-red-600 flex-shrink-0" />
 
-        <form onSubmit={handleLogin} className="bg-white rounded-2xl shadow-sm border border-stone-200 p-6 space-y-4">
+      <div className="flex-1 flex items-center justify-center px-8 py-16">
+        <div className="w-full max-w-xs">
+
+          {/* Wordmark */}
+          <div className="mb-10">
+            <div className="w-8 h-0.5 bg-red-600 mb-5" />
+            <p className="text-xs font-bold uppercase tracking-[0.3em] text-zinc-500 mb-1">Flood</p>
+            <h1 className="text-4xl font-black uppercase tracking-tight text-zinc-100 leading-none">
+              Piano<br />Tuning
+            </h1>
+            <p className="text-xs font-bold uppercase tracking-[0.3em] text-zinc-500 mt-2">CRM</p>
+          </div>
+
+          {/* Error */}
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3">
+            <div className="border-l-2 border-red-600 pl-3 mb-6 text-sm text-red-400">
               {error}
             </div>
           )}
 
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-stone-700 mb-1">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full border border-stone-300 rounded-xl px-4 py-3 text-stone-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-              placeholder="you@example.com"
-            />
-          </div>
+          {/* Form */}
+          <form onSubmit={handleLogin} className="space-y-0">
+            <div className="border border-zinc-800">
+              <label htmlFor="email" className="block text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500 px-4 pt-3">
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                autoComplete="email"
+                className="w-full bg-transparent px-4 pt-1 pb-3 text-zinc-100 outline-none text-sm placeholder-zinc-700"
+                placeholder="you@example.com"
+              />
+            </div>
 
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-stone-700 mb-1">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full border border-stone-300 rounded-xl px-4 py-3 text-stone-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-              placeholder="••••••••"
-            />
-          </div>
+            <div className="border border-t-0 border-zinc-800">
+              <label htmlFor="password" className="block text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500 px-4 pt-3">
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoComplete="current-password"
+                className="w-full bg-transparent px-4 pt-1 pb-3 text-zinc-100 outline-none text-sm placeholder-zinc-700"
+                placeholder="••••••••"
+              />
+            </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-amber-600 hover:bg-amber-700 disabled:opacity-50 text-white font-semibold py-3 px-4 rounded-xl transition-colors"
-          >
-            {loading ? "Signing in…" : "Sign in"}
-          </button>
-        </form>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-red-600 hover:bg-red-700 disabled:opacity-40 text-white text-xs font-bold uppercase tracking-[0.2em] py-4 mt-4 transition-colors"
+            >
+              {loading ? "Signing in…" : "Sign In"}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );

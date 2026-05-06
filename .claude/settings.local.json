@@ -3,7 +3,25 @@
     "allow": [
       "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --no-src-dir --import-alias \"@/*\" --yes)",
       "Bash(npx create-next-app@16.2.4 . --typescript --tailwind --eslint --app --no-src-dir --import-alias \"@/*\" --yes --name \"flood-tuning-crm\")",
-      "Bash(npm install *)"
+      "Bash(npm install *)",
+      "Bash(ls /Users/xcastudent/Desktop/FloodTuningCRM/node_modules/next/dist/docs/ 2>/dev/null | head -20 || echo \"no docs dir\")",
+      "Read(//Users/xcastudent/Desktop/FloodTuningCRM/**)",
+      "Bash(npm run *)",
+      "Bash(curl -s http://localhost:3001)",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "Bash(npx tsc *)",
+      "Bash(npx --prefix /Users/xcastudent/Desktop/FloodTuningCRM tsc --noEmit -p /Users/xcastudent/Desktop/FloodTuningCRM/tsconfig.json)",
+      "Bash(curl -s http://localhost:3001/ -L)",
+      "Bash(curl -sv http://localhost:3001/)",
+      "Bash(kill 4919 4920 4924)",
+      "Bash(ln -s /Users/xcastudent/Desktop/FloodTuningCRM/node_modules /Users/xcastudent/Desktop/FloodTuningCRM/.claude/worktrees/intelligent-poitras-ee770d/node_modules)",
+      "Bash(ln -s /Users/xcastudent/Desktop/FloodTuningCRM/.env.local /Users/xcastudent/Desktop/FloodTuningCRM/.claude/worktrees/intelligent-poitras-ee770d/.env.local)",
+      "Bash(mkdir -p \"/Users/xcastudent/Desktop/FloodTuningCRM/.claude/worktrees/intelligent-poitras-ee770d/app/\\(app\\)/clients/[id]/pianos/[pianoId]/appointments/new\")",
+      "Bash(node -e \"require\\('@supabase/supabase-js'\\)\")",
+      "Bash(node -e \"require\\('papaparse'\\)\")",
+      "Bash(node scripts/import-csv.mjs \"/Users/xcastudent/Downloads/flood-tuning-export-2026-05-06.csv\" james@leadvaultdigital.com)",
+      "Bash(node scripts/import-csv.mjs \"/Users/xcastudent/Downloads/flood-tuning-export-2026-05-06.csv\" floodtuning30@gmail.com Eastman803)",
+      "Bash(node scripts/import-csv.mjs \"/Users/xcastudent/Downloads/flood-tuning-export-2026-05-06.csv\" floodtuning30@gmail.com \"Eastman803!!!\")"
     ]
   }
 }
