@@ -31,7 +31,7 @@ export function ReminderCard({ client, reminded, remindedAt }: ReminderCardProps
     .map((p) => [p.brand, p.model].filter(Boolean).join(" ") || "piano")
     .join(", ");
 
-  const smsText = `Hi ${client.name.split(" ")[0]}! This is your piano technician reaching out — your ${pianoDescriptions} is due for its regular tuning and service. Would you like to schedule an appointment? Just reply to this message or give me a call!`;
+  const smsText = `Hi ${client.name.split(" ")[0]}! This is James Flood Jr reaching out — your ${pianoDescriptions} is due for its regular tuning and service. Would you like to schedule an appointment? Just reply to this message, give me a call at 502-509-7756, or visit www.floodpianotuning.com! Thanks so much!`;
 
   function handleCopy() {
     navigator.clipboard.writeText(smsText).then(() => {

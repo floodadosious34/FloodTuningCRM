@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { ReminderCard } from "@/components/ReminderCard";
+import ClientSearch from "@/components/ClientSearch";
 
 type ServiceRecordRow = {
   id: string;
@@ -23,15 +24,20 @@ type ClientRow = {
   pianos: PianoRow[];
 };
 
-export default async function RemindersPage() {
+export default async function RemindersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
   const supabase = await createClient();
+  const { q } = await searchParams;
 
   const elevenMonthsAgo = new Date();
   elevenMonthsAgo.setMonth(elevenMonthsAgo.getMonth() - 11);
   const cutoff = elevenMonthsAgo.toISOString().split("T")[0];
   const today = new Date().toISOString().split("T")[0];
 
-  const { data: rawClients } = await supabase
+  let query = supabase
     .from("clients")
     .select(`
       id, name, phone, email,
@@ -41,6 +47,12 @@ export default async function RemindersPage() {
       )
     `)
     .order("name");
+
+  if (q) {
+    query = query.ilike("name", `%${q}%`);
+  }
+
+  const { data: rawClients } = await query;
 
   const clients = (rawClients ?? []) as ClientRow[];
 
@@ -77,10 +89,16 @@ export default async function RemindersPage() {
       <h1 className="text-2xl font-bold text-stone-900 mb-1">Reminder Queue</h1>
       <p className="text-stone-500 text-sm mb-6">Clients whose piano is due for service</p>
 
+      <div className="mb-6">
+        <ClientSearch defaultValue={q} />
+      </div>
+
       {pending.length === 0 && reminded.length === 0 && (
         <div className="bg-white rounded-2xl border border-stone-200 p-8 text-center">
           <div className="text-3xl mb-2">🎉</div>
-          <p className="text-stone-500 text-sm">No clients due for service right now.</p>
+          <p className="text-stone-500 text-sm">
+            {q ? `No clients due for service matching "${q}".` : "No clients due for service right now."}
+          </p>
         </div>
       )}
 
