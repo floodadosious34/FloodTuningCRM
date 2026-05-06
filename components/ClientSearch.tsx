@@ -22,7 +22,7 @@ export default function ClientSearch({ defaultValue }: { defaultValue?: string }
   return (
     <div className="relative">
       <svg
-        className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400"
+        className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600"
         fill="none"
         stroke="currentColor"
         strokeWidth={2}
@@ -35,7 +35,7 @@ export default function ClientSearch({ defaultValue }: { defaultValue?: string }
         defaultValue={defaultValue}
         onChange={handleSearch}
         placeholder="Search clients…"
-        className={`w-full bg-white border border-stone-200 rounded-xl pl-10 pr-4 py-3 text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-opacity ${isPending ? "opacity-60" : ""}`}
+        className={`w-full bg-zinc-900 border border-zinc-800 pl-10 pr-4 py-3 text-zinc-100 placeholder-zinc-700 outline-none focus:border-zinc-600 transition-all ${isPending ? "opacity-50" : ""}`}
       />
     </div>
   );
