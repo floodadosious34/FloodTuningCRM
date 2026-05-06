@@ -12,15 +12,15 @@ const styles: { value: PianoStyle; label: string }[] = [
 
 export function PianoStyleSelect({ defaultValue }: { defaultValue?: string | null }) {
   return (
-    <div>
-      <label htmlFor="style" className="block text-sm font-medium text-stone-700 mb-1">
+    <div className="border border-zinc-800">
+      <label htmlFor="style" className="block text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500 px-4 pt-3">
         Style
       </label>
       <select
         id="style"
         name="style"
         defaultValue={defaultValue ?? ""}
-        className="w-full border border-stone-300 rounded-xl px-4 py-3 text-stone-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white"
+        className="w-full bg-zinc-950 border-0 px-4 pt-1 pb-3 text-zinc-100 outline-none text-sm appearance-none"
       >
         <option value="">Select style…</option>
         {styles.map((s) => (
