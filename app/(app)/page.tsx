@@ -233,10 +233,14 @@ function AppointmentCalendar({
   for (let i = 0; i < firstDayOfWeek; i++) cells.push(null);
   for (let d = 1; d <= daysInMonth; d++) cells.push(d);
 
-  const thirtyDaysOut = new Date(todayDate);
-  thirtyDaysOut.setDate(thirtyDaysOut.getDate() + 30);
-  const thirtyDaysOutStr = thirtyDaysOut.toISOString().split("T")[0];
-  const upcoming = entries.filter((e) => e.date <= thirtyDaysOutStr);
+  // End of current calendar week (Saturday)
+  const daysUntilSat = 6 - todayDate.getDay();
+  const endOfWeek = new Date(todayDate);
+  endOfWeek.setDate(todayDate.getDate() + daysUntilSat);
+  const endOfWeekStr = endOfWeek.toISOString().split("T")[0];
+
+  const thisWeek = entries.filter((e) => e.date <= endOfWeekStr);
+  const later = entries.filter((e) => e.date > endOfWeekStr);
 
   return (
     <div className="border border-zinc-800 overflow-hidden">
@@ -266,43 +270,69 @@ function AppointmentCalendar({
         </div>
       </div>
 
-      {upcoming.length === 0 ? (
+      {thisWeek.length === 0 && later.length === 0 ? (
         <div className="px-4 py-6 text-center">
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-700">No appointments in the next 30 days</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-700">No upcoming appointments</p>
         </div>
       ) : (
         <div className="divide-y divide-zinc-800">
-          {upcoming.map((entry) => {
-            const dateLabel = new Date(entry.date + "T00:00:00").toLocaleDateString("en-US", {
-              weekday: "short", month: "short", day: "numeric",
-            });
-            return (
-              <Link
-                key={entry.id}
-                href={`/clients/${entry.client_id}`}
-                className="flex items-center gap-4 px-4 py-3 hover:bg-zinc-900 transition-colors"
-              >
-                <div className="w-10 flex-shrink-0">
-                  <span className="block text-[10px] font-bold uppercase tracking-[0.1em] text-red-600">{dateLabel.split(",")[0]}</span>
-                  <span className="block text-lg font-black text-zinc-100 leading-tight">
-                    {dateLabel.split(" ").slice(-1)[0]}
-                  </span>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-zinc-100 truncate">{entry.client_name}</p>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-zinc-600 truncate mt-0.5">
-                    {entry.piano_brand ?? "Piano"} · {entry.service_type}
-                  </p>
-                </div>
-                <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-zinc-700 flex-shrink-0">
-                  {dateLabel.replace(/^[^,]+,\s*/, "")}
+          {thisWeek.length === 0 ? (
+            <div className="px-4 py-4 text-center">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-700">No appointments this week</p>
+            </div>
+          ) : (
+            thisWeek.map((entry) => <AppointmentRow key={entry.id} entry={entry} />)
+          )}
+
+          {later.length > 0 && (
+            <details className="group">
+              <summary className="flex items-center justify-between px-4 py-3 cursor-pointer list-none hover:bg-zinc-900 transition-colors">
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-600">
+                  Coming Up — {later.length}
                 </span>
-              </Link>
-            );
-          })}
+                <svg
+                  className="w-3.5 h-3.5 text-zinc-600 transition-transform group-open:rotate-180"
+                  fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                </svg>
+              </summary>
+              <div className="divide-y divide-zinc-800 border-t border-zinc-800">
+                {later.map((entry) => <AppointmentRow key={entry.id} entry={entry} />)}
+              </div>
+            </details>
+          )}
         </div>
       )}
     </div>
+  );
+}
+
+function AppointmentRow({ entry }: { entry: AppointmentEntry }) {
+  const dateLabel = new Date(entry.date + "T00:00:00").toLocaleDateString("en-US", {
+    weekday: "short", month: "short", day: "numeric",
+  });
+  return (
+    <Link
+      href={`/clients/${entry.client_id}`}
+      className="flex items-center gap-4 px-4 py-3 hover:bg-zinc-900 transition-colors"
+    >
+      <div className="w-10 flex-shrink-0">
+        <span className="block text-[10px] font-bold uppercase tracking-[0.1em] text-red-600">{dateLabel.split(",")[0]}</span>
+        <span className="block text-lg font-black text-zinc-100 leading-tight">
+          {dateLabel.split(" ").slice(-1)[0]}
+        </span>
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-semibold text-zinc-100 truncate">{entry.client_name}</p>
+        <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-zinc-600 truncate mt-0.5">
+          {entry.piano_brand ?? "Piano"} · {entry.service_type}
+        </p>
+      </div>
+      <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-zinc-700 flex-shrink-0">
+        {dateLabel.replace(/^[^,]+,\s*/, "")}
+      </span>
+    </Link>
   );
 }
 
