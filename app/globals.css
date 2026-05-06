@@ -4,3 +4,8 @@
 .safe-area-pb {
   padding-bottom: env(safe-area-inset-bottom);
 }
+
+/* Bauhaus base — always dark */
+html {
+  color-scheme: dark;
+}
