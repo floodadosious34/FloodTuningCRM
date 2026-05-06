@@ -66,9 +66,7 @@ export default async function RemindersPage({
 
   const remindedMap = new Map<string, string>();
   for (const r of recentReminders ?? []) {
-    if (!remindedMap.has(r.client_id)) {
-      remindedMap.set(r.client_id, r.reminded_at);
-    }
+    if (!remindedMap.has(r.client_id)) remindedMap.set(r.client_id, r.reminded_at);
   }
 
   function isDue(piano: PianoRow): boolean {
@@ -86,28 +84,30 @@ export default async function RemindersPage({
 
   return (
     <div className="max-w-2xl mx-auto px-4 pt-6">
-      <h1 className="text-2xl font-bold text-stone-900 mb-1">Reminder Queue</h1>
-      <p className="text-stone-500 text-sm mb-6">Clients whose piano is due for service</p>
+      <div className="mb-8">
+        <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-600 mb-1">Flood Piano Tuning</p>
+        <h1 className="text-2xl font-black uppercase tracking-tight text-zinc-100">Reminder Queue</h1>
+        <p className="text-zinc-600 text-sm mt-1">Clients whose piano is due for service</p>
+      </div>
 
       <div className="mb-6">
         <ClientSearch defaultValue={q} />
       </div>
 
       {pending.length === 0 && reminded.length === 0 && (
-        <div className="bg-white rounded-2xl border border-stone-200 p-8 text-center">
-          <div className="text-3xl mb-2">🎉</div>
-          <p className="text-stone-500 text-sm">
-            {q ? `No clients due for service matching "${q}".` : "No clients due for service right now."}
+        <div className="border border-zinc-800 p-8 text-center">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-700">
+            {q ? `No clients due for service matching "${q}"` : "No clients due for service"}
           </p>
         </div>
       )}
 
       {pending.length > 0 && (
-        <section className="mb-6">
-          <h2 className="text-sm font-semibold text-stone-500 uppercase tracking-wide mb-3">
-            Needs Contact ({pending.length})
-          </h2>
-          <div className="space-y-3">
+        <section className="mb-8">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-600 mb-3">
+            Needs Contact — {pending.length}
+          </p>
+          <div className="border border-zinc-800 divide-y divide-zinc-800">
             {pending.map((client) => (
               <ReminderCard key={client.id} client={client} reminded={false} />
             ))}
@@ -117,10 +117,10 @@ export default async function RemindersPage({
 
       {reminded.length > 0 && (
         <section>
-          <h2 className="text-sm font-semibold text-stone-500 uppercase tracking-wide mb-3">
-            Recently Reminded ({reminded.length})
-          </h2>
-          <div className="space-y-3">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-600 mb-3">
+            Recently Reminded — {reminded.length}
+          </p>
+          <div className="border border-zinc-800 divide-y divide-zinc-800">
             {reminded.map((client) => (
               <ReminderCard
                 key={client.id}

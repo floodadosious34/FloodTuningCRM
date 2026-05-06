@@ -48,84 +48,61 @@ export function ReminderCard({ client, reminded, remindedAt }: ReminderCardProps
   }
 
   return (
-    <div className={`bg-white rounded-2xl border ${markedDone ? "border-stone-200 opacity-70" : "border-stone-200"} overflow-hidden`}>
-      {/* Client info row */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-stone-100">
+    <div className={markedDone ? "opacity-50" : ""}>
+      {/* Client row */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-800">
         <div className="flex-1 min-w-0">
-          <Link href={`/clients/${client.id}`} className="font-semibold text-stone-900 hover:text-amber-700">
+          <Link href={`/clients/${client.id}`} className="font-semibold text-zinc-100 hover:text-red-400 transition-colors">
             {client.name}
           </Link>
           <div className="flex gap-3 mt-0.5">
             {client.phone && (
-              <a href={`tel:${client.phone}`} className="text-xs text-amber-600">
+              <a href={`tel:${client.phone}`} className="text-xs text-red-500 hover:text-red-400">
                 {client.phone}
               </a>
             )}
             {client.email && (
-              <a href={`mailto:${client.email}`} className="text-xs text-amber-600 truncate">
+              <a href={`mailto:${client.email}`} className="text-xs text-red-500 hover:text-red-400 truncate">
                 {client.email}
               </a>
             )}
           </div>
         </div>
         {markedDone && remindedAt && (
-          <span className="text-xs text-stone-400 flex-shrink-0">
+          <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-zinc-700 flex-shrink-0">
             {formatRelative(remindedAt)}
           </span>
         )}
       </div>
 
       {/* SMS template */}
-      <div className="px-4 py-3">
-        <p className="text-xs text-stone-500 mb-2">Text message template:</p>
-        <p className="text-sm text-stone-700 bg-stone-50 rounded-xl p-3 leading-relaxed">
+      <div className="px-4 py-3 border-b border-zinc-800">
+        <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-zinc-600 mb-2">Text message template</p>
+        <p className="text-sm text-zinc-400 bg-zinc-900 p-3 leading-relaxed">
           {smsText}
         </p>
       </div>
 
       {/* Actions */}
-      <div className="flex gap-2 px-4 pb-4">
+      <div className="flex gap-0 px-4 py-3">
         <button
           onClick={handleCopy}
-          className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-medium border transition-colors ${
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-bold uppercase tracking-[0.1em] border transition-colors mr-2 ${
             copied
-              ? "bg-green-50 border-green-200 text-green-700"
-              : "bg-stone-50 border-stone-200 text-stone-700 hover:bg-stone-100"
+              ? "border-green-800 text-green-500 bg-green-950"
+              : "border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:border-zinc-600"
           }`}
         >
-          {copied ? (
-            <>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-              </svg>
-              Copied!
-            </>
-          ) : (
-            <>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184" />
-              </svg>
-              Copy Text
-            </>
-          )}
+          {copied ? "Copied!" : "Copy Text"}
         </button>
 
         {!markedDone && (
           <button
             onClick={handleMarkReminded}
             disabled={isPending}
-            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-medium bg-amber-600 hover:bg-amber-700 disabled:opacity-50 text-white transition-colors"
+            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-bold uppercase tracking-[0.1em] bg-red-600 hover:bg-red-700 disabled:opacity-40 text-white transition-colors"
           >
-            {isPending ? (
-              "Saving…"
-            ) : (
-              <>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                </svg>
-                Mark Reminded
-              </>
-            )}
+            {isPending ? "Saving…" : "Mark Reminded"}
           </button>
         )}
       </div>
@@ -135,10 +112,7 @@ export function ReminderCard({ client, reminded, remindedAt }: ReminderCardProps
 
 function formatRelative(isoString: string) {
   const date = new Date(isoString);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
+  const diffDays = Math.floor((Date.now() - date.getTime()) / (1000 * 60 * 60 * 24));
   if (diffDays === 0) return "today";
   if (diffDays === 1) return "yesterday";
   return `${diffDays}d ago`;
