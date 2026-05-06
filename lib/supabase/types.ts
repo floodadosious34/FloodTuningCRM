@@ -51,6 +51,17 @@ export interface Reminder {
   created_at: string;
 }
 
+export interface Appointment {
+  id: string;
+  piano_id: string;
+  scheduled_date: string;
+  scheduled_time: string | null;
+  scheduled_end_time: string | null;
+  service_type: string;
+  notes: string | null;
+  created_at: string;
+}
+
 export type Database = {
   public: {
     Tables: {
@@ -73,6 +84,11 @@ export type Database = {
         Row: Reminder;
         Insert: Omit<Reminder, "id" | "created_at">;
         Update: Partial<Omit<Reminder, "id" | "created_at">>;
+      };
+      appointments: {
+        Row: Appointment;
+        Insert: Omit<Appointment, "id" | "created_at">;
+        Update: Partial<Omit<Appointment, "id" | "piano_id" | "created_at">>;
       };
     };
   };

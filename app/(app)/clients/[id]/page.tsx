@@ -2,10 +2,11 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { deleteClientAction } from "@/app/actions/clients";
+import { deleteAppointmentAction } from "@/app/actions/appointments";
 import { DeleteButton } from "@/components/DeleteButton";
-import type { Client, Piano, ServiceRecord } from "@/lib/supabase/types";
+import type { Client, Piano, ServiceRecord, Appointment } from "@/lib/supabase/types";
 
-type PianoWithRecords = Piano & { service_records: ServiceRecord[] };
+type PianoWithRecords = Piano & { service_records: ServiceRecord[]; appointments: Appointment[] };
 
 export default async function ClientDetailPage({
   params,
@@ -26,7 +27,7 @@ export default async function ClientDetailPage({
 
   const { data: rawPianos } = await supabase
     .from("pianos")
-    .select(`*, service_records (*)`)
+    .select(`*, service_records (*), appointments (*)`)
     .eq("client_id", id)
     .order("created_at");
 
@@ -151,7 +152,57 @@ export default async function ClientDetailPage({
               )}
 
               <div className="px-4 py-2">
+                {/* Upcoming appointments */}
                 <div className="flex items-center justify-between py-2">
+                  <p className="text-xs font-medium text-stone-400 uppercase tracking-wide">Appointments</p>
+                  <Link
+                    href={`/clients/${id}/pianos/${piano.id}/appointments/new`}
+                    className="text-xs text-amber-600 font-medium"
+                  >
+                    + Schedule
+                  </Link>
+                </div>
+                {(() => {
+                  const today = new Date().toISOString().split("T")[0];
+                  const upcoming = [...piano.appointments]
+                    .filter((a) => a.scheduled_date >= today)
+                    .sort((a, b) => a.scheduled_date.localeCompare(b.scheduled_date));
+                  if (upcoming.length === 0) {
+                    return <p className="text-stone-400 text-sm pb-2">No upcoming appointments</p>;
+                  }
+                  return (
+                    <div className="space-y-2 pb-2">
+                      {upcoming.map((appt) => (
+                        <div key={appt.id} className="border border-blue-100 bg-blue-50 rounded-xl p-3">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-stone-800">{appt.service_type}</p>
+                              <p className="text-xs text-stone-500 mt-0.5">
+                                {formatDate(appt.scheduled_date)}
+                                {appt.scheduled_time && (
+                                  <>
+                                    {" · "}
+                                    {formatTime(appt.scheduled_time)}
+                                    {appt.scheduled_end_time && ` – ${formatTime(appt.scheduled_end_time)}`}
+                                  </>
+                                )}
+                              </p>
+                              {appt.notes && (
+                                <p className="text-xs text-stone-600 mt-1.5 whitespace-pre-wrap">{appt.notes}</p>
+                              )}
+                            </div>
+                            <DeleteButton
+                              action={deleteAppointmentAction.bind(null, appt.id, id)}
+                              label="Delete"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
+
+                <div className="flex items-center justify-between py-2 border-t border-stone-100 mt-1">
                   <p className="text-xs font-medium text-stone-400 uppercase tracking-wide">Service History</p>
                   <Link
                     href={`/clients/${id}/pianos/${piano.id}/service/new`}
@@ -225,4 +276,11 @@ function isPastDue(dateStr: string) {
 
 function formatStyle(style: string) {
   return style.charAt(0).toUpperCase() + style.slice(1).replace("_", " ");
+}
+
+function formatTime(time: string) {
+  const [h, m] = time.split(":").map(Number);
+  const period = h >= 12 ? "PM" : "AM";
+  const hour = h % 12 || 12;
+  return `${hour}:${String(m).padStart(2, "0")} ${period}`;
 }
