@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import { markRemindedAction } from "@/app/actions/reminders";
+import { markRemindedAction, sendReminderEmailAction } from "@/app/actions/reminders";
 
 interface ReminderCardProps {
   client: {
@@ -26,6 +26,8 @@ export function ReminderCard({ client, reminded, remindedAt }: ReminderCardProps
   const [copied, setCopied] = useState(false);
   const [markedDone, setMarkedDone] = useState(reminded);
   const [isPending, startTransition] = useTransition();
+  const [emailStatus, setEmailStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [emailError, setEmailError] = useState<string | null>(null);
 
   const pianoDescriptions = client.pianos
     .map((p) => [p.brand, p.model].filter(Boolean).join(" ") || "piano")
@@ -44,6 +46,27 @@ export function ReminderCard({ client, reminded, remindedAt }: ReminderCardProps
     startTransition(async () => {
       await markRemindedAction(client.id);
       setMarkedDone(true);
+    });
+  }
+
+  function handleSendEmail() {
+    if (!client.email) return;
+    setEmailStatus("sending");
+    setEmailError(null);
+    startTransition(async () => {
+      const result = await sendReminderEmailAction(
+        client.id,
+        client.name,
+        client.email!,
+        pianoDescriptions
+      );
+      if (result.success) {
+        setEmailStatus("sent");
+        setMarkedDone(true);
+      } else {
+        setEmailStatus("error");
+        setEmailError(result.error ?? "Failed to send email");
+      }
     });
   }
 
@@ -84,7 +107,7 @@ export function ReminderCard({ client, reminded, remindedAt }: ReminderCardProps
       </div>
 
       {/* Actions */}
-      <div className="flex gap-0 px-4 py-3">
+      <div className="flex gap-0 px-4 py-3 flex-wrap gap-y-2">
         <button
           onClick={handleCopy}
           className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-bold uppercase tracking-[0.1em] border transition-colors mr-2 ${
@@ -96,6 +119,28 @@ export function ReminderCard({ client, reminded, remindedAt }: ReminderCardProps
           {copied ? "Copied!" : "Copy Text"}
         </button>
 
+        {client.email && !markedDone && (
+          <button
+            onClick={handleSendEmail}
+            disabled={isPending || emailStatus === "sending"}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-bold uppercase tracking-[0.1em] border transition-colors mr-2 ${
+              emailStatus === "sent"
+                ? "border-green-800 text-green-500 bg-green-950"
+                : emailStatus === "error"
+                ? "border-red-900 text-red-400 bg-red-950"
+                : "border-zinc-700 text-zinc-300 hover:text-white hover:border-zinc-500"
+            }`}
+          >
+            {emailStatus === "sending"
+              ? "Sending…"
+              : emailStatus === "sent"
+              ? "Email Sent!"
+              : emailStatus === "error"
+              ? "Failed"
+              : "Send Email"}
+          </button>
+        )}
+
         {!markedDone && (
           <button
             onClick={handleMarkReminded}
@@ -106,6 +151,12 @@ export function ReminderCard({ client, reminded, remindedAt }: ReminderCardProps
           </button>
         )}
       </div>
+
+      {emailStatus === "error" && emailError && (
+        <div className="px-4 pb-3">
+          <p className="text-xs text-red-400 bg-red-950 border border-red-900 px-3 py-2">{emailError}</p>
+        </div>
+      )}
     </div>
   );
 }
