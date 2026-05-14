@@ -40,7 +40,7 @@ export default function LeadComposeForm({ lead }: { lead: Lead }) {
       <div className="px-4 py-4 border-b border-zinc-800">
         <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-600 mb-3">Email Preview</p>
         <div className="space-y-1.5 text-sm text-zinc-500 bg-zinc-900 px-3 py-3">
-          <p><span className="text-zinc-700">From:</span> James Flood Jr &lt;james@floodpianotuning.com&gt;</p>
+          <p><span className="text-zinc-700">From:</span> James Flood Jr &lt;jflood@floodpianotuning.com&gt;</p>
           <p><span className="text-zinc-700">To:</span> {lead.email}</p>
           <p><span className="text-zinc-700">Subject:</span> Professional Piano Tuning Services for {lead.institution}</p>
         </div>
