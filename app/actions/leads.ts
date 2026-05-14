@@ -24,6 +24,20 @@ export async function markLeadEmailedAction(leadId: string) {
   revalidatePath("/marketing");
 }
 
+export async function updateLeadContactAction(
+  leadId: string,
+  email: string | null,
+  phone: string | null
+) {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("leads")
+    .update({ email: email || null, phone: phone || null })
+    .eq("id", leadId);
+  if (error) throw error;
+  revalidatePath("/marketing");
+}
+
 export async function deleteLeadsAction() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();

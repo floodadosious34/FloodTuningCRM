@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import type { Lead } from "@/lib/supabase/types";
 import LeadsImporter from "@/components/LeadsImporter";
+import LeadContactEditor from "@/components/LeadContactEditor";
 
 
 export default async function MarketingPage() {
@@ -79,7 +80,7 @@ export default async function MarketingPage() {
                           </p>
                         )}
                       </div>
-                      <div className="flex-shrink-0">
+                      <div className="flex-shrink-0 flex flex-col items-end gap-2">
                         {lead.email ? (
                           <Link
                             href={`/marketing/compose/${lead.id}`}
@@ -87,10 +88,13 @@ export default async function MarketingPage() {
                           >
                             {lead.emailed_at ? "Send Again" : "Compose"}
                           </Link>
-                        ) : (
-                          <span className="text-[10px] font-bold uppercase tracking-[0.1em] border border-zinc-800 text-zinc-700 px-3 py-2 whitespace-nowrap">
-                            No Email
-                          </span>
+                        ) : null}
+                        {(!lead.email || !lead.phone) && (
+                          <LeadContactEditor
+                            leadId={lead.id}
+                            initialEmail={lead.email}
+                            initialPhone={lead.phone}
+                          />
                         )}
                       </div>
                     </div>
