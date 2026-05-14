@@ -19,6 +19,7 @@ export async function POST(req: Request) {
 
   const rows = parsed.data as Record<string, string>[];
 
+  const seen = new Set<string>();
   const leads = rows
     .filter((r) => r["Institution"]?.trim())
     .map((r) => ({
@@ -31,7 +32,12 @@ export async function POST(req: Request) {
       address: r["Address"]?.trim() || null,
       notes: r["Notes"]?.trim() || null,
       emailed_at: null,
-    }));
+    }))
+    .filter((lead) => {
+      if (seen.has(lead.institution)) return false;
+      seen.add(lead.institution);
+      return true;
+    });
 
   if (leads.length === 0) {
     return new NextResponse("No valid rows found", { status: 400 });
