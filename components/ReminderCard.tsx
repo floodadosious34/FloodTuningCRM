@@ -119,6 +119,15 @@ export function ReminderCard({ client, reminded, remindedAt }: ReminderCardProps
           {copied ? "Copied!" : "Copy Text"}
         </button>
 
+        {client.phone && !markedDone && (
+          <a
+            href={`sms:${client.phone}?body=${encodeURIComponent(smsText)}`}
+            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-bold uppercase tracking-[0.1em] border border-zinc-700 text-zinc-300 hover:text-white hover:border-zinc-500 transition-colors mr-2"
+          >
+            Send Text
+          </a>
+        )}
+
         {client.email && !markedDone && (
           <button
             onClick={handleSendEmail}
