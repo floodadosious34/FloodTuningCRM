@@ -24,9 +24,15 @@ export async function sendMarketingEmailAction(
     <tr><td align="center">
       <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;max-width:600px;width:100%;">
 
-        <!-- Header -->
+        <!-- Header image -->
         <tr>
-          <td style="background:#111111;padding:32px 40px;border-bottom:3px solid #dc2626;">
+          <td style="padding:0;margin:0;position:relative;">
+            <img src="https://flood-tuning-crm.vercel.app/piano-header.jpg" alt="Piano being tuned" width="600" style="display:block;width:100%;max-width:600px;height:220px;object-fit:cover;" />
+          </td>
+        </tr>
+        <!-- Header text -->
+        <tr>
+          <td style="background:#111111;padding:28px 40px;border-bottom:3px solid #dc2626;">
             <p style="margin:0 0 4px 0;font-size:10px;font-weight:bold;letter-spacing:0.3em;text-transform:uppercase;color:#666666;">Flood Piano Tuning</p>
             <h1 style="margin:0;font-size:24px;font-weight:900;text-transform:uppercase;letter-spacing:-0.02em;color:#ffffff;">Professional Piano Care</h1>
           </td>
