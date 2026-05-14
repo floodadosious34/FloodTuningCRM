@@ -37,7 +37,7 @@ export async function sendMarketingEmailAction(
           <td style="padding:40px;color:#333333;font-size:15px;line-height:1.7;">
             <p style="margin:0 0 20px 0;">${greeting}</p>
             <p style="margin:0 0 20px 0;">
-              My name is James Flood Jr, and I'm a professional piano technician serving the Louisville area. I'm reaching out to introduce my tuning and service offerings to your organization${orgLine}.
+              My name is James Flood Jr, and I'm a professional piano technician serving the Kentucky/Cincinnati area. I'm reaching out to introduce my tuning and service offerings to your organization${orgLine}.
             </p>
             ${customNote ? `<p style="margin:0 0 20px 0;">${customNote}</p>` : ""}
             <p style="margin:0 0 12px 0;">I offer a full range of piano services including:</p>
