@@ -42,6 +42,12 @@ export default async function MarketingPage() {
         >
           + Quick Send
         </Link>
+        <Link
+          href="/marketing/sent"
+          className="text-xs font-bold uppercase tracking-[0.1em] border border-zinc-800 text-zinc-500 hover:text-zinc-300 hover:border-zinc-600 px-4 py-2.5 transition-colors"
+        >
+          Sent History
+        </Link>
       </div>
 
       {leads.length === 0 ? (
