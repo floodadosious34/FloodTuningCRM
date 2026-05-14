@@ -51,6 +51,20 @@ export interface Reminder {
   created_at: string;
 }
 
+export interface Lead {
+  id: string;
+  user_id: string;
+  category: string | null;
+  institution: string;
+  contact_name: string | null;
+  email: string | null;
+  phone: string | null;
+  address: string | null;
+  notes: string | null;
+  emailed_at: string | null;
+  created_at: string;
+}
+
 export interface Appointment {
   id: string;
   piano_id: string;
@@ -89,6 +103,11 @@ export type Database = {
         Row: Appointment;
         Insert: Omit<Appointment, "id" | "created_at">;
         Update: Partial<Omit<Appointment, "id" | "piano_id" | "created_at">>;
+      };
+      leads: {
+        Row: Lead;
+        Insert: Omit<Lead, "id" | "created_at">;
+        Update: Partial<Omit<Lead, "id" | "user_id" | "created_at">>;
       };
     };
   };

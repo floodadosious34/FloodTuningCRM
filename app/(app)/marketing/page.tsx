@@ -1,136 +1,104 @@
-"use client";
+import { createClient } from "@/lib/supabase/server";
+import Link from "next/link";
+import type { Lead } from "@/lib/supabase/types";
+import LeadsImporter from "@/components/LeadsImporter";
 
-import { useState, useTransition } from "react";
-import { sendMarketingEmailAction } from "@/app/actions/marketing";
+export default async function MarketingPage() {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("leads")
+    .select("*")
+    .order("institution");
+  const leads = (data ?? []) as Lead[];
 
-export default function MarketingPage() {
-  const [recipientEmail, setRecipientEmail] = useState("");
-  const [recipientName, setRecipientName] = useState("");
-  const [organization, setOrganization] = useState("");
-  const [customNote, setCustomNote] = useState("");
-  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
+  const grouped = leads.reduce<Record<string, Lead[]>>((acc, lead) => {
+    const key = lead.category ?? "Other";
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(lead);
+    return acc;
+  }, {});
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!recipientEmail) return;
-    setStatus("sending");
-    setErrorMsg(null);
-    startTransition(async () => {
-      const result = await sendMarketingEmailAction(
-        recipientEmail,
-        recipientName,
-        organization,
-        customNote
-      );
-      if (result.success) {
-        setStatus("sent");
-        setRecipientEmail("");
-        setRecipientName("");
-        setOrganization("");
-        setCustomNote("");
-      } else {
-        setStatus("error");
-        setErrorMsg(result.error ?? "Failed to send email");
-      }
-    });
-  }
+  const totalEmailed = leads.filter((l) => l.emailed_at).length;
 
   return (
     <div className="max-w-2xl mx-auto px-4 pt-6 pb-8">
-      <div className="mb-8">
+      <div className="mb-6">
         <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-600 mb-1">Flood Piano Tuning</p>
         <h1 className="text-2xl font-black uppercase tracking-tight text-zinc-100">Marketing Outreach</h1>
-        <p className="text-zinc-600 text-sm mt-1">Send a professional intro email to schools, universities, and venues</p>
+        {leads.length > 0 && (
+          <p className="text-zinc-600 text-sm mt-1">
+            {totalEmailed} of {leads.length} emailed
+          </p>
+        )}
       </div>
 
-      <form onSubmit={handleSubmit} className="border border-zinc-800">
+      <LeadsImporter hasLeads={leads.length > 0} />
 
-        <div className="px-4 py-4 border-b border-zinc-800">
-          <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-600 mb-2">
-            Recipient Email <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="email"
-            required
-            value={recipientEmail}
-            onChange={(e) => setRecipientEmail(e.target.value)}
-            placeholder="music@university.edu"
-            className="w-full bg-zinc-900 border border-zinc-800 text-zinc-100 placeholder-zinc-700 px-3 py-2.5 text-sm focus:outline-none focus:border-zinc-600"
-          />
+      {leads.length === 0 ? (
+        <div className="border border-zinc-800 p-8 text-center mt-6">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-700">
+            No leads yet — import a CSV to get started
+          </p>
         </div>
-
-        <div className="px-4 py-4 border-b border-zinc-800">
-          <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-600 mb-2">
-            Contact Name <span className="text-zinc-700">(optional)</span>
-          </label>
-          <input
-            type="text"
-            value={recipientName}
-            onChange={(e) => setRecipientName(e.target.value)}
-            placeholder="Dr. Sarah Johnson"
-            className="w-full bg-zinc-900 border border-zinc-800 text-zinc-100 placeholder-zinc-700 px-3 py-2.5 text-sm focus:outline-none focus:border-zinc-600"
-          />
+      ) : (
+        <div className="mt-6 space-y-6">
+          {Object.entries(grouped).map(([category, categoryLeads]) => (
+            <section key={category}>
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-600 mb-2">
+                {category} — {categoryLeads.length}
+              </p>
+              <div className="border border-zinc-800 divide-y divide-zinc-800">
+                {categoryLeads.map((lead) => (
+                  <div key={lead.id} className={`px-4 py-3 ${lead.emailed_at ? "opacity-50" : ""}`}>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-zinc-100 text-sm">{lead.institution}</p>
+                        {lead.contact_name && (
+                          <p className="text-xs text-zinc-500 mt-0.5">{lead.contact_name}</p>
+                        )}
+                        <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-1">
+                          {lead.email && (
+                            <span className="text-xs text-red-500 truncate">{lead.email}</span>
+                          )}
+                          {lead.phone && (
+                            <span className="text-xs text-zinc-600">{lead.phone}</span>
+                          )}
+                        </div>
+                        {lead.emailed_at && (
+                          <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-zinc-700 mt-1">
+                            Emailed {formatRelative(lead.emailed_at)}
+                          </p>
+                        )}
+                      </div>
+                      <div className="flex-shrink-0">
+                        {lead.email ? (
+                          <Link
+                            href={`/marketing/compose/${lead.id}`}
+                            className="text-[10px] font-bold uppercase tracking-[0.1em] border border-zinc-700 text-zinc-300 hover:text-white hover:border-zinc-500 px-3 py-2 transition-colors whitespace-nowrap"
+                          >
+                            {lead.emailed_at ? "Send Again" : "Compose"}
+                          </Link>
+                        ) : (
+                          <span className="text-[10px] font-bold uppercase tracking-[0.1em] border border-zinc-800 text-zinc-700 px-3 py-2 whitespace-nowrap">
+                            No Email
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          ))}
         </div>
-
-        <div className="px-4 py-4 border-b border-zinc-800">
-          <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-600 mb-2">
-            Organization <span className="text-zinc-700">(optional)</span>
-          </label>
-          <input
-            type="text"
-            value={organization}
-            onChange={(e) => setOrganization(e.target.value)}
-            placeholder="University of Louisville School of Music"
-            className="w-full bg-zinc-900 border border-zinc-800 text-zinc-100 placeholder-zinc-700 px-3 py-2.5 text-sm focus:outline-none focus:border-zinc-600"
-          />
-        </div>
-
-        <div className="px-4 py-4 border-b border-zinc-800">
-          <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-600 mb-2">
-            Personal Note <span className="text-zinc-700">(optional)</span>
-          </label>
-          <textarea
-            value={customNote}
-            onChange={(e) => setCustomNote(e.target.value)}
-            placeholder="e.g. I noticed your upcoming recital season and wanted to reach out…"
-            rows={3}
-            className="w-full bg-zinc-900 border border-zinc-800 text-zinc-100 placeholder-zinc-700 px-3 py-2.5 text-sm focus:outline-none focus:border-zinc-600 resize-none"
-          />
-          <p className="text-[10px] text-zinc-700 mt-1.5">This will be inserted as a paragraph in the email body.</p>
-        </div>
-
-        <div className="px-4 py-4">
-          {status === "sent" && (
-            <div className="mb-4 px-3 py-2.5 bg-green-950 border border-green-800">
-              <p className="text-xs font-bold uppercase tracking-[0.1em] text-green-500">Email sent successfully!</p>
-            </div>
-          )}
-          {status === "error" && errorMsg && (
-            <div className="mb-4 px-3 py-2.5 bg-red-950 border border-red-900">
-              <p className="text-xs text-red-400">{errorMsg}</p>
-            </div>
-          )}
-          <button
-            type="submit"
-            disabled={isPending || status === "sending"}
-            className="w-full py-3 bg-red-600 hover:bg-red-700 disabled:opacity-40 text-white text-xs font-bold uppercase tracking-[0.15em] transition-colors"
-          >
-            {status === "sending" ? "Sending…" : "Send Outreach Email"}
-          </button>
-        </div>
-
-      </form>
-
-      <div className="mt-6 border border-zinc-800 px-4 py-4">
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-600 mb-3">Email Preview</p>
-        <div className="space-y-1.5 text-sm text-zinc-500">
-          <p><span className="text-zinc-700">From:</span> James Flood Jr &lt;james@floodpianotuning.com&gt;</p>
-          <p><span className="text-zinc-700">To:</span> {recipientEmail || <span className="text-zinc-700 italic">recipient email</span>}</p>
-          <p><span className="text-zinc-700">Subject:</span> Professional Piano Tuning Services for {organization || <span className="text-zinc-700 italic">Your Organization</span>}</p>
-        </div>
-      </div>
+      )}
     </div>
   );
+}
+
+function formatRelative(isoString: string) {
+  const diffDays = Math.floor((Date.now() - new Date(isoString).getTime()) / (1000 * 60 * 60 * 24));
+  if (diffDays === 0) return "today";
+  if (diffDays === 1) return "yesterday";
+  return `${diffDays}d ago`;
 }
