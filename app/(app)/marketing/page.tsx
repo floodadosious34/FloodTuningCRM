@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { Lead } from "@/lib/supabase/types";
 import LeadsImporter from "@/components/LeadsImporter";
 
+
 export default async function MarketingPage() {
   const supabase = await createClient();
   const { data } = await supabase
@@ -32,7 +33,15 @@ export default async function MarketingPage() {
         )}
       </div>
 
-      <LeadsImporter hasLeads={leads.length > 0} />
+      <div className="flex items-center gap-2 flex-wrap">
+        <LeadsImporter hasLeads={leads.length > 0} />
+        <Link
+          href="/marketing/compose"
+          className="text-xs font-bold uppercase tracking-[0.1em] border border-red-800 text-red-500 hover:bg-red-950 px-4 py-2.5 transition-colors"
+        >
+          + Quick Send
+        </Link>
+      </div>
 
       {leads.length === 0 ? (
         <div className="border border-zinc-800 p-8 text-center mt-6">
