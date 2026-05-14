@@ -30,8 +30,9 @@ export default async function SentEmailsPage() {
     if (error) {
       fetchError = error.message;
     } else {
-      emails = ((data as { data?: SentEmail[] })?.data ?? (data as SentEmail[]) ?? [])
-        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      const raw = data as unknown as { data?: SentEmail[] } | SentEmail[];
+      const list: SentEmail[] = Array.isArray(raw) ? raw : (raw?.data ?? []);
+      emails = list.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
     }
   } catch (err) {
     fetchError = err instanceof Error ? err.message : "Failed to load sent emails";
