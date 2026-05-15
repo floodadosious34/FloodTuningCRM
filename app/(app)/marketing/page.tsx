@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { Lead } from "@/lib/supabase/types";
 import LeadsImporter from "@/components/LeadsImporter";
 import LeadContactEditor from "@/components/LeadContactEditor";
+import { LeadBookedToggle } from "@/components/LeadBookedToggle";
 
 
 export default async function MarketingPage() {
@@ -47,6 +48,12 @@ export default async function MarketingPage() {
           className="text-xs font-bold uppercase tracking-[0.1em] border border-zinc-800 text-zinc-500 hover:text-zinc-300 hover:border-zinc-600 px-4 py-2.5 transition-colors"
         >
           Sent History
+        </Link>
+        <Link
+          href="/marketing/dashboard"
+          className="text-xs font-bold uppercase tracking-[0.1em] border border-zinc-800 text-zinc-500 hover:text-zinc-300 hover:border-zinc-600 px-4 py-2.5 transition-colors"
+        >
+          Dashboard
         </Link>
       </div>
 
@@ -95,6 +102,12 @@ export default async function MarketingPage() {
                             {lead.emailed_at ? "Send Again" : "Compose"}
                           </Link>
                         ) : null}
+                        {lead.emailed_at && (
+                          <LeadBookedToggle
+                            leadId={lead.id}
+                            isBooked={!!lead.converted_at}
+                          />
+                        )}
                         {(!lead.email || !lead.phone) && (
                           <LeadContactEditor
                             leadId={lead.id}

@@ -50,6 +50,32 @@ create table if not exists appointments (
   created_at timestamptz default now() not null
 );
 
+-- Marketing leads table
+create table if not exists leads (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users(id) on delete cascade not null,
+  category text,
+  institution text not null,
+  contact_name text,
+  email text,
+  phone text,
+  address text,
+  notes text,
+  emailed_at timestamptz,
+  converted_at timestamptz,
+  created_at timestamptz default now() not null
+);
+
+alter table leads enable row level security;
+
+create policy "leads: user owns" on leads
+  for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+create index if not exists idx_leads_user_id on leads(user_id);
+
+-- Migration for existing databases:
+-- alter table leads add column if not exists converted_at timestamptz;
+
 -- Reminder tracking table
 create table if not exists reminders (
   id uuid primary key default gen_random_uuid(),

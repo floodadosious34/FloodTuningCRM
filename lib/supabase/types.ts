@@ -62,6 +62,7 @@ export interface Lead {
   address: string | null;
   notes: string | null;
   emailed_at: string | null;
+  converted_at: string | null;
   created_at: string;
 }
 

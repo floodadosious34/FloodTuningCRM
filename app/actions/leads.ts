@@ -38,6 +38,17 @@ export async function updateLeadContactAction(
   revalidatePath("/marketing");
 }
 
+export async function markLeadConvertedAction(leadId: string, convert: boolean) {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("leads")
+    .update({ converted_at: convert ? new Date().toISOString() : null })
+    .eq("id", leadId);
+  if (error) throw error;
+  revalidatePath("/marketing");
+  revalidatePath("/marketing/dashboard");
+}
+
 export async function deleteLeadsAction() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
